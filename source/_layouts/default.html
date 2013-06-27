@@ -1,9 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>changecase | {{ page.title }}</title>
+    <title>{{ page.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
   </head>
   <body>
-    {{ content }}
+    <div class="row">
+      <div class="navbar span12">
+        <div class="navbar-inner">
+          <a class="brand" href="/">Jeff Jacobson-Swartfager</a>
+          <ul class="nav">
+            <li {% if page.url == '/index.html' %} class="active" {% endif %}>
+              <a href="/">Home</a></li>
+            <li {% if page.url == '/posts.html' %} class="active" {% endif %}>
+              <a href="/posts">Posts</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span4">
+      </div>
+      <div class="span8">
+        {{ content }}
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-dropdown.js"></script>
   </body>
 </html>
