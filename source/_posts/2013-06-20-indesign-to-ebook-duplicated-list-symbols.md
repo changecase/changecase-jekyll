@@ -163,6 +163,8 @@ Semantic Enforcement
 Currently, the best solution is to use the above to techniques to get you a step
 in the right direction, and then do the real clean up by hand.
 
+I plan to construct some automation.
+
 
 [1]: http://forums.adobe.com/message/4527122 "InDesign CS6 Coding ePub Lists Wrong?"
 [2]: http://silvadeau.wordpress.com/2012/08/23/lists-in-epub-generated-from-indesign-cs6 "Lists in ePub generated from InDesign CS6"
