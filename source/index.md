@@ -26,12 +26,6 @@ Jeff plays well with others.
 
 **Test line.** 
 
-**Another Test**
-
-**A third test**
-
-**Fourth test**
-
 
 Programs                                                                      {#programs}
 --------
