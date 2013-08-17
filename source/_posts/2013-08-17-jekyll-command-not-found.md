@@ -18,5 +18,9 @@ Where Did Jekyll Go?
 
 I've got nearly everything hooked up: all of the git stuff seems to be working fine, but when my bash script goes to build the site with jekyll, it balks.
 
+Potential Solution
+------------------
+Add quotes around the PATH string.
+
 [Jekyll]: http://jekyllrb.com
 [tatey.com]: http://tatey.com/2009/04/29/jekyll-meets-dreamhost-automated-deployment-for-jekyll-with-git/
