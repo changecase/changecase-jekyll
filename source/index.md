@@ -24,8 +24,6 @@ incorporate both into any project he is a part of.
 
 Jeff plays well with others.
 
-**Test line.** 
-
 
 Programs                                                                      {#programs}
 --------
