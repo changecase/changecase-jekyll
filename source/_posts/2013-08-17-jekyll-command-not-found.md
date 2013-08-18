@@ -20,7 +20,7 @@ I've got nearly everything hooked up: all of the git stuff seems to be working f
 
 Potential Solution
 ------------------
-Add quotes around the PATH string.
+Add quotes around the PATH string. Yeah... that wasn't it.
 
 [Jekyll]: http://jekyllrb.com
 [tatey.com]: http://tatey.com/2009/04/29/jekyll-meets-dreamhost-automated-deployment-for-jekyll-with-git/
