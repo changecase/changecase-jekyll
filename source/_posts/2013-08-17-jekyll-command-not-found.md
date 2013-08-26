@@ -1,5 +1,5 @@
 ---
-title: Jekyll: Command Not Found
+title: Jekyll - Command Not Found
 layout: default
 ---
 
