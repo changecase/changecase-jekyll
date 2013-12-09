@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>???</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="row">
+      <div class="navbar span12">
+        <div class="navbar-inner">
+          <a class="brand" href="/">Jeff Jacobson-Swartfager</a>
+          <ul class="nav">
+            <li >
+              <a href="/">Home</a></li>
+            <li >
+              <a href="/posts">Posts</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span4">
+      </div>
+      <div class="span6">
+        <p>I’ve been using <a href="https://github.com/blahed/frank" title="Frank, the Static Site Non-Framework">Frank</a> to generate the static pages of a few sites I’m working on. This has been great, especially for data that is generated, but doesn’t change all that much.</p>
+
+<p>It has led to cleaner files and faster load times. I’ve been seperating the various views into layouts, cleaning up the construction of the html with <a href="http://haml.info/" title="The HAML markup language">haml</a>, automating tasks with <a href="http://www.ruby-lang.org/en/" title="Ruby programming language">Ruby</a>, and composing copy in <a href="https://github.com/bhollis/maruku" title="Maruku mantained by Ben Hollis">maruku</a>.</p>
+
+<p>I ran into a problem the other day though.</p>
+
+<h2 id="the_problem">The Problem</h2>
+
+<p>We use Citrix’s GoToMeeting, GoToTraining, and GoToWebinar for a few activities at Advisicon. We expose our schedule of upcoming webinars and online training sessions with the GoToTraining API and the GoToWebinar API. I’m using the <a href="https://github.com/citrixonline/GoToTraining-Ruby">GoToTraining Ruby API wrapper</a> and the <a href="https://github.com/citrixonline/GoToWebinar-Ruby">GoToWebinar Ruby API wrapper</a> to produce the upcoming calendars.</p>
+
+<p>This has been working great, but I realized that the code between the two is pretty similar. I could remove the redundancy by moving the Ruby out of the page and into its own method that encapsulates both GoToTraining and GoToWebinar. This would also enable me to use a single maruku filter in haml, improving the readability and utility of markdown.</p>
+
+<p>First, I need to successfully move at least one of them out of the calling page.</p>
+      </div>
+      <div class="span2">
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-dropdown.js"></script>
+  </body>
+</html>

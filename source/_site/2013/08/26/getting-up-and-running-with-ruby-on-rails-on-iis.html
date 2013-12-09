@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Getting Up and Running with Ruby on Rails on IIS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="row">
+      <div class="navbar span12">
+        <div class="navbar-inner">
+          <a class="brand" href="/">Jeff Jacobson-Swartfager</a>
+          <ul class="nav">
+            <li >
+              <a href="/">Home</a></li>
+            <li >
+              <a href="/posts">Posts</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span4">
+      </div>
+      <div class="span6">
+        <h1 id="getting_up_and_running_with_ruby_on_rails_on_iis">Getting Up and Running with Ruby on Rails on IIS</h1>
+
+<p>After a mad dash the previous week to compose and deploy a significant number of changes to our website, I decided to try and get Ruby on Rails up and running on the production site.</p>
+
+<p>I’ve been developing the site in HTML5 HAML for structure and backend processing, LESS for presentation management, and jQuery for client side processing. The main content of the pages are in Maruku flavored markdown in most cases (Textile is used for pages with elements that Maruku 0.61 flubbs… like nested lists). All of this allows me to build static pages that load really fast.</p>
+
+<p>I’d been considering moving out of HAML into Liquid templating goodness of Jekyll, but I’m getting some push back from my content writers. They don’t know markdown, and don’t have much interest in learning.</p>
+
+<p>Instead, they want a WYSIWYG.</p>
+
+<p>So the plan: sacrifice the lean load-time of a static site in the short term with a dynamically generated site that will teach its users how to write in markdown.</p>
+
+<h2 id="implimenting_the_plan">Implimenting the Plan</h2>
+
+<p>To get folks to buy into markdown, they’ll need to learn to use it. However, only nerds like me use their free time to read documentation. So I’ll make use of a database to hold the content of the site and make it editable. The editable text will be in markdown.</p>
+
+<p>A few sites already do this in a super snappy way.</p>
+
+<ul>
+<li>
+<p><a href="http://stackoverflow.com">Stackoverflow</a>, for example has a really sweet integration of a markdown editor and previewer as their question and answer platform.</p>
+
+<p>If you know markdown, you can just type away. As you type, a live preview is displayed below the text box.</p>
+
+<p>If you don’t know markdown (or you’ve forgotten something), a helpful cheat sheet is displayed next to the textbox. There are also automatic buttons that will help you enter in just about everything you need: bold and italic text, hyperlinks, blockquotes, code, images, ordered and unordered lists, top level headings, and horizontal rules.</p>
+</li>
+
+<li>
+<p><a href="http://github.com">Github</a> is another site that does a fantastic job at teaching markdown through use. You can choose the markup language you use, but markdown is the default (and awesome anyway).</p>
+
+<p>Github’s markdown editor gives you a plain text field for a title, and a second text area box for the markdown content.</p>
+
+<p>Like Stackoverflow, github’s content entry comes with helpful buttons (h1 through h3, links, images, bold, italic, code, unordered and ordered lists, blockquotes, and horizontal rules) and a help guide.</p>
+</li>
+</ul>
+
+<p>In order to make it happen though, these sites need to be able to accept and store user content, which means they need a database.</p>
+
+<h2 id="the_state_the_server_iis_in">The State the Server IIS In</h2>
+
+<p>The server of the current site is an offsite IIS 6.0 server. That means I have to get Ruby (and Rails) running on IIS. An old version of IIS.</p>
+
+<p>The machine is already running a <a href="http://www.microsoft.com/en-us/sqlserver/default.aspx">Microsoft SQL Server</a> database, SQL Server 2005 (SQL Server 9.0.5057). SQL Server is suppose to be a pretty awesome db system according to some of my co-workers. We are pretty well bought into the Microsoft stack, so using the Microsoft database is probably the best way to go (despite a <a href="http://datachomp.com/archives/top-10-reasons-i-like-postgres-over-sql-server/">growing preference</a> for <a href="http://www.postgresql.org/">PostgreSQL</a> in the open source <a href="http://www.reddit.com/r/SQLServer/comments/1a87sp/your_boss_asks_you_to_justify_using_sql_server/">community</a>). Our Microsoft Project, SharePoint, and business intelligence tools are more likely to play well with SQL Server than other db systems.</p>
+
+<p>Additionally, given the high cost of SQL Server, it is unlikely that I’ll have a lot of opportunity to get experience with SQL Server on my own. So, SQL Server it is.</p>
+
+<p>The machine that all of this sits on is (according to the system properties) a Microsoft Windows Server 2003 Enterprise Edition OS on Service Pack 2. I don’t know why there’s such a discrepency between the SQL Server stats and the actual machine, but this may be something that bites me in the future.</p>
+
+<h2 id="cygwin">Cygwin</h2>
+
+<p>To do all of this work, I’ll need a Unix-y commandline interface: <a href="http://www.cygwin.com/">Cygwin</a>.</p>
+
+<p>Cygwin comes with the following packages installed:</p>
+
+<ul>
+<li>
+<p>Admin</p>
+
+<ul>
+<li><strong>libattr1</strong> (2.4.46-1): Shared lib for managing filesystem extended attributes</li>
+</ul>
+</li>
+
+<li>
+<p>Archive</p>
+
+<ul>
+<li><strong>liblzma5</strong> (5.0.2_20110517-1): XZ and LZMA compression (runtime)</li>
+
+<li><strong>xz</strong> (5.0.2_20110517-1): XZ and LZMA compression (utilities)</li>
+</ul>
+</li>
+
+<li>
+<p>Base</p>
+
+<ul>
+<li><strong>alternatives</strong> (1.3.30c-10): A tool for managing package conflicts</li>
+
+<li><strong>base-cygwin</strong> (3.3-1): Initial base installation helper script</li>
+
+<li><strong>base-files</strong> (4.1-1): A set of important system configuration and setup files</li>
+
+<li><strong>bash</strong> (4.1.10-4): The GNU Bourne Again SHell</li>
+
+<li><strong>coreutils</strong> (8.15-1): GNU core utilities (includes fileutils, sh-utils and textutils)</li>
+
+<li><strong>cygutils</strong> (1.4.14-1): A collection of simple utilities (core collection)</li>
+
+<li><strong>cygwin</strong> (1.7.24-1): The UNIX emulation engine</li>
+
+<li><strong>dash</strong> (0.5.7-1): Dash shell</li>
+
+<li><strong>dos2unix</strong> (6.0.3-1): Line Break Conversion</li>
+
+<li><strong>editrights</strong> (1.01-2): Alter Windows user rights and privleges from command line</li>
+
+<li><strong>file</strong> (5.11-1): Determines file type using ‘magic’ numbers</li>
+
+<li><strong>findutils</strong> (4.5.11-1): Utilities for finding files–find, xargs, locate, updatedb</li>
+
+<li><strong>gawk</strong> (4.1.0-1): GNU awk, a pattern scanning and processing language</li>
+
+<li><strong>grep</strong> (2.6.3-1): Search and print textual input for lines which match a specific pattern</li>
+
+<li><strong>gzip</strong> (1.4-1): The GNU compression utility</li>
+
+<li><strong>ipc-utils</strong> (1.0-1): XSI IPC maintainance utilities</li>
+
+<li><strong>libreadline7</strong> (6.1.2-3): GNU readline and history libraries (runtime)</li>
+
+<li><strong>login</strong> (1.10-10): Sign on to a system</li>
+
+<li><strong>man</strong> (1.6g-2): Man, apropos and whatis commands</li>
+
+<li><strong>mintty</strong> (1.1.3-1): Terminal emulator with native Windows look and feel</li>
+
+<li><strong>rebase</strong> (4.4.0-1): Utilities for rebasing DLLs to load at alternate addresses</li>
+
+<li><strong>run</strong> (1.3.0-1): Launch cmdline programs with hidden console</li>
+
+<li><strong>sed</strong> (4.2.2-3): The GNU sed stream editor</li>
+
+<li><strong>tar</strong> (1.26-1): A GNU file archiving program</li>
+
+<li><strong>terminfo</strong> (5.7_20091114-14): Database for ncurses-style terminal handling</li>
+
+<li><strong>tzcode</strong> (2013c-1): The time zone package</li>
+
+<li><strong>vim-minimal</strong> (7.3.1152-1): Minimal Vi text editor</li>
+
+<li><strong>which</strong> (2.20-2): Prints out full path of executables</li>
+
+<li><strong>zlib0</strong> (1.2.8-1): Zlib de/compression library (runtime)</li>
+</ul>
+</li>
+
+<li>
+<p>Devel</p>
+
+<ul>
+<li><strong>gettext</strong> (0.18.1.1-2): GNU Internationalization library and core utilities (PLUS LINK LIBS)</li>
+</ul>
+</li>
+
+<li>
+<p>Doc</p>
+
+<ul>
+<li><strong>man</strong> (1.6g-2): Man, apropos and whatis commands</li>
+</ul>
+</li>
+
+<li>
+<p>Interpreters</p>
+
+<ul>
+<li><strong>gawk</strong> (4.1.0-1): GNU awk, a pattern scanning and processing language</li>
+</ul>
+</li>
+
+<li>
+<p>Libs</p>
+
+<ul>
+<li><strong>gettext</strong> (0.18.1.1-2): GNU Internationaliztion library and core utilities (PLUS LINK LIBS)</li>
+
+<li><strong>libattr1</strong> (2.4.46-1): Shared lib for managing filesystem extended attributes</li>
+
+<li><strong>lbbz2_1</strong> (1.0.6-2): A high-quality block-storing file compressor (runtime)</li>
+
+<li><strong>libgcc1</strong> (4.7.3-1): GCC C runtime library</li>
+
+<li><strong>libgmp10</strong> (5.1.2-1): Library for arbitary precision arithmetic (C runtime)</li>
+
+<li><strong>libgmp3</strong> (4.3.2-1): Runtime library for GMP arbitary precision arithmetic library</li>
+
+<li><strong>libiconv2</strong> (1.14-2): GNU character set conversion library and utilities
+<ul>
+<li>runtime (1)</li>
+</ul>
+</li>
+
+<li><strong>libintl8</strong> (0.18.1.1-2): GNU Internationalization runtime library</li>
+
+<li><strong>liblzma5</strong> (5.0.2_20110517-1): XZ and LZMA compression (runtime)</li>
+
+<li><strong>libmpfr4</strong> (3.1.2-1): A library for multiple-precision floating-point arithmetic with exact rounding (runtime)</li>
+
+<li><strong>libcurses10</strong> (5.7-18): (runtime) libraries for terminal handling</li>
+
+<li><strong>libcursesw10</strong> (5.7-18): (runtime) libraries for terminal handling (wide character support)</li>
+
+<li><strong>libpcre0</strong> (8.21-2): Perl-Compatible Regular Expressions library (C runtime)</li>
+
+<li><strong>libpopt0</strong> (1.6.4-4): Library for parsing cmdline parameters - runtime</li>
+
+<li><strong>libreadline7</strong> (6.1.2-3): GNU readline and history libraries (runtime)</li>
+
+<li><strong>libstdc++6</strong> (4.7.3-1): GCC C++ runtime library</li>
+
+<li><strong>zlib0</strong> (1.2.8-1): Zlib de/compression library (runtime)</li>
+</ul>
+</li>
+
+<li>
+<p>Math</p>
+
+<ul>
+<li><strong>libgmp10</strong> (5.1.2-1): Library for arbitary precision arithmetic (C runtime)</li>
+
+<li><strong>libgmp3</strong> (4.3.2-1): Runtime library for GMP arbitary precision arithmetic library</li>
+
+<li><strong>libmpfr4</strong> (3.1.2-1): A library for multiple-precision floating-point arithmetic with exact rounding (runtime)</li>
+</ul>
+</li>
+
+<li>
+<p>Shells</p>
+
+<ul>
+<li><strong>bash</strong> (4.1.10-4): The GNU Bourne Again SHell</li>
+
+<li><strong>dash</strong> (0.5.7-1): Dash shell</li>
+
+<li><strong>mintty</strong> (1.1.3-1): Terminal emulator with native Windows look and feel</li>
+</ul>
+</li>
+
+<li>
+<p>System</p>
+
+<ul>
+<li><strong>libattr1</strong> (2.4.46-1): Shared lib for managing filesystem extended attributes</li>
+
+<li><strong>rebase</strong> (4.4.0-1): Utilities for rebasing DLLs to load at alternate addresses</li>
+
+<li><strong>tzcode</strong> (2013c-1): The time zone package</li>
+</ul>
+</li>
+
+<li>
+<p>Text</p>
+
+<ul>
+<li><strong>groff</strong> (1.21-2): GNU troff text-formatting system</li>
+
+<li><strong>less</strong> (444-1): A file pager program, similar to more(1)</li>
+</ul>
+</li>
+
+<li>
+<p>Utils</p>
+
+<ul>
+<li><strong>bzip2</strong> (1.0.6-2): A high-quality block-sorting file compressor (utilities)</li>
+
+<li><strong>diffutils</strong> (3.2-1): A GNU collection of diff utilities</li>
+
+<li><strong>file</strong> (5.11-1): Determines file type using ‘magic’ numbers</li>
+
+<li><strong>rebase</strong> (4.4.0-1): Utilities for rebasing DLLs to load at alternate addresses</li>
+
+<li><strong>which</strong> (2.20-2): Prints out full path of executables</li>
+</ul>
+</li>
+</ul>
+
+<p>Because I’m pretty sure I’ll need them, I’m also going to install the following packages:</p>
+
+<ul>
+<li>
+<p>Web</p>
+
+<ul>
+<li><strong>curl</strong> (7.32.0-1): Multi-protocol file transfer tools</li>
+
+<li><strong>wget</strong> (1.13.4-1): Utility to retrieve files from the WWW via HTTP and FTP</li>
+</ul>
+</li>
+</ul>
+
+<p>Cygwin is getting installed into the cygwin directory at <code>C:\cygwin</code> and the packages are all going into <code>C:\Documents and Settings\Jeff Jacobson\Desktop</code>.</p>
+
+<h2 id="rvm">RVM</h2>
+
+<p>To manage the Rubies on the server, I plan to make use of <a href="https://rvm.io/">RVM</a>. The RVM website links to <a href="http://blog.developwithpassion.com/2012/03/30/installing-rvm-with-cygwin-on-windows/">this tutorial</a> for guidance on installing RVM on IIS.</p>
+
+<p>There are a few more cygwin packages to install according to this, so I open the cygwin setup program back up and install the following:</p>
+
+<ul>
+<li>
+<p>Archive</p>
+
+<ul>
+<li><strong>unzip</strong> (6.0-10): Info-ZIP decompression utility</li>
+</ul>
+</li>
+
+<li>
+<p>Devel</p>
+
+<ul>
+<li><strong>colorgcc</strong> (1.3.2-2): Colorizer for GCC warning/error messages</li>
+
+<li><strong>gcc</strong> (4.7.3-1): GNU Compiler Collection</li>
+
+<li><strong>gcc-core</strong> (4.7.3-1): GNU Compiler Collection (C, OpenMP)</li>
+
+<li><strong>git</strong> (1.7.9-1): Fast Version Control System - core files</li>
+
+<li><strong>git-completion</strong> (1.7.9-1): Fast Version Control System - git bash completion</li>
+
+<li><strong>git-gui</strong> (1.7.9-1): Fast Version Control System - git-gui viewer</li>
+
+<li><strong>git-svn</strong> (1.7.9-1): Fast Version Control System - git-svn conversions</li>
+
+<li><strong>gitk</strong> (1.7.9-1): Fast Version Control System - gitk viewer</li>
+
+<li><strong>libtool</strong> (2.4-1): A shared library generation tool</li>
+
+<li><strong>libncurses-devel</strong> (5.7-18): (devel) libraries for terminal handling</li>
+
+<li><strong>make</strong> (3.82.90-1): The GNU version of the ‘make’ utility</li>
+
+<li><strong>mercurial</strong> (2.5.2-1): Python based distributed version control system (DVCS)</li>
+
+<li><strong>openssl-devel</strong> (1.0.1e-2): The OpenSSL development environment</li>
+
+<li><strong>readline</strong> (6.1.2-3): GNU readline and history libraries</li>
+</ul>
+</li>
+
+<li>
+<p>Libs</p>
+
+<ul>
+<li><strong>zlib</strong> (1.2.8-1): Zlib de/compression library (documentation)</li>
+
+<li><strong>zlib-devel</strong> (1.2.8-1): Zlib de/compression library (development)</li>
+</ul>
+</li>
+
+<li>
+<p>Net</p>
+
+<ul>
+<li><strong>openssh</strong> (6.2p2-1): The OpenSSH server and client programs</li>
+
+<li><strong>openssl</strong> (1.0.1e-2): The OpenSSL base environment</li>
+</ul>
+</li>
+
+<li>
+<p>Utils</p>
+
+<ul>
+<li>
+<p><strong>ncurses</strong> (5.7-18): Utilities for terminal handling</p>
+</li>
+
+<li>
+<p>The guide mentions the need to use Patch. Since I don’t see that with this version of setup, I’m going to give the following two a try in the hopes that one of them works:</p>
+
+<ul>
+<li><strong>patcher</strong> (0.0.20040521-1): Perl script To manage patches</li>
+
+<li><strong>patchutils</strong> (0.3.2-1): A small collectionof programs that operate on patch files</li>
+</ul>
+
+<p>Hopefully, one of those works!</p>
+</li>
+</ul>
+</li>
+</ul>
+      </div>
+      <div class="span2">
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-dropdown.js"></script>
+  </body>
+</html>

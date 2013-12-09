@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Jekyll - Command Not Found</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="row">
+      <div class="navbar span12">
+        <div class="navbar-inner">
+          <a class="brand" href="/">Jeff Jacobson-Swartfager</a>
+          <ul class="nav">
+            <li >
+              <a href="/">Home</a></li>
+            <li >
+              <a href="/posts">Posts</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span4">
+      </div>
+      <div class="span6">
+        <h1 id="jekyll_command_not_found">Jekyll: Command Not Found</h1>
+
+<p><a href="http://jekyllrb.com">Jekyll</a>, most of the time you’re pretty awesome but sometimes you can be a real son-of-a-bitch.</p>
+
+<p>I’ve got a dreamhost server and have been trying to use <a href="http://tatey.com/2009/04/29/jekyll-meets-dreamhost-automated-deployment-for-jekyll-with-git/">this tutorial</a> to deploy Jekyll via git. Sure, at the end of the tutorial Tate Johnson recommends using a Rakefile and rsync for deployment, but I’m really keen on using git for both version control and deployment.</p>
+
+<p>Basically, I want to turn dreamhost into Heroku.</p>
+
+<h2 id="where_did_jekyll_go">Where Did Jekyll Go?</h2>
+
+<p>I’ve got nearly everything hooked up: all of the git stuff seems to be working fine, but when my bash script goes to build the site with jekyll, it balks.</p>
+
+<h2 id="potential_solution">Potential Solution</h2>
+
+<p>Add quotes around the PATH string. Yeah… that wasn’t it.</p>
+      </div>
+      <div class="span2">
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-dropdown.js"></script>
+  </body>
+</html>

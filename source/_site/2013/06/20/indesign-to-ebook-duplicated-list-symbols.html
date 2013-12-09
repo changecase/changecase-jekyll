@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>InDesign to Ebook Duplicated List Symbols</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/css/syntax.css" rel="stylesheet" media="screen">
+  </head>
+  <body>
+    <div class="row">
+      <div class="navbar span12">
+        <div class="navbar-inner">
+          <a class="brand" href="/">Jeff Jacobson-Swartfager</a>
+          <ul class="nav">
+            <li >
+              <a href="/">Home</a></li>
+            <li >
+              <a href="/posts">Posts</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span4">
+      </div>
+      <div class="span6">
+        <h1 id="indesign_to_ebook_duplicated_list_symbols">InDesign to Ebook: Duplicated List Symbols</h1>
+
+<p>Working on setting up an InDesign book for conversion to ebook formats (ePub and mobi), I ran into a problem: double bullets. We use a lot of ordered lists and unordered lists in our technical manuals – there’s a lot of step-by-step “do this, then do that” material. So, getting rid of the bullets all together isn’t an option.</p>
+
+<h2 id="is_it_me">Is It Me?</h2>
+
+<p>At first, I thought I must be doing something wrong. After all, I’d semantically named by bullet styles and the bullets were being applied by the paragraph style <em>Bullets &amp; Numbering</em> feature. Surely, I must have some setting wrong in the export options!</p>
+
+<p>Nope.</p>
+
+<p>It looks like I’m not the only one with this problem. It was reported on the <a href="http://forums.adobe.com/message/4527122" title="InDesign CS6 Coding ePub Lists Wrong?">Adobe forums in June of 2012</a>. That was almost a year ago.</p>
+
+<h2 id="hacks">Hacks</h2>
+
+<p>Some hacks have cropped up in order to deal with this terriblly non-semantic use of lists.</p>
+
+<h3 id="correct_the_markup">Correct the markup</h3>
+
+<p>Part of the problem is that InDesign CS6 doesn’t have a good way to semantically group inline content. You can Group objects, but you can’t group together a collection of paragraphs and inline objects. That means you can’t say “Hey, InDesign: all of these things are a part of the same list item.”</p>
+
+<p><a href="http://silvadeau.wordpress.com/2012/08/23/lists-in-epub-generated-from-indesign-cs6" title="Lists in ePub generated from InDesign CS6">Ron Bilodeau’s solution</a> is to let InDesign get you most of the way there, and then strip out some of the stuff (the ending <code>&lt;/ol&gt;</code> tags) that is messing everything up.</p>
+
+<p>Ron has a decent idea here, but he really needs to be properly nesting the elements within the list item. Ron’s solution leaves the document in only barely better condition than it was when it started:</p>
+<div class='highlight'><pre><code class='html'><span class='lineno'> 1</span> <span class='nt'>&lt;body</span> <span class='na'>id=</span><span class='s'>&quot;List_test&quot;</span> <span class='na'>xml:lang=</span><span class='s'>&quot;en-US&quot;</span><span class='nt'>&gt;</span>
+<span class='lineno'> 2</span>   <span class='nt'>&lt;div</span> <span class='na'>class=</span><span class='s'>&quot;Basic-Text-Frame&quot;</span><span class='nt'>&gt;</span>
+<span class='lineno'> 3</span>     <span class='nt'>&lt;ol&gt;</span>
+<span class='lineno'> 4</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>1.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>First list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'> 5</span>     <span class='nt'>&lt;/ol&gt;</span>
+<span class='lineno'> 6</span>     <span class='nt'>&lt;p</span> <span class='na'>class=</span><span class='s'>&quot;Num-List----&quot;</span><span class='nt'>&gt;</span>Additional paragraph to extend the content for the first list item.<span class='nt'>&lt;/p&gt;</span>
+<span class='lineno'> 7</span>     <span class='nt'>&lt;ol&gt;</span>
+<span class='lineno'> 8</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>2.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>Second list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'> 9</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>3.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>Third list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'>10</span>     <span class='nt'>&lt;/ol&gt;</span>
+<span class='lineno'>11</span>   <span class='nt'>&lt;/div&gt;</span>
+<span class='lineno'>12</span> <span class='nt'>&lt;/body&gt;</span>
+</code></pre></div>
+<p>Instead, he should be nesting that paragraph within the first list item:</p>
+<div class='highlight'><pre><code class='html'><span class='lineno'> 1</span> <span class='nt'>&lt;body</span> <span class='na'>id=</span><span class='s'>&quot;List_test&quot;</span> <span class='na'>xml:lang=</span><span class='s'>&quot;en-US&quot;</span><span class='nt'>&gt;</span>
+<span class='lineno'> 2</span>   <span class='nt'>&lt;div</span> <span class='na'>class=</span><span class='s'>&quot;Basic-Text-Frame&quot;</span><span class='nt'>&gt;</span>
+<span class='lineno'> 3</span>     <span class='nt'>&lt;ol&gt;</span>
+<span class='lineno'> 4</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>1.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>First list item
+<span class='lineno'> 5</span>         <span class='nt'>&lt;p</span> <span class='na'>class=</span><span class='s'>&quot;Num-List----&quot;</span><span class='nt'>&gt;</span>Additional paragraph to extend the content for the first list item.<span class='nt'>&lt;/p&gt;</span>
+<span class='lineno'> 6</span>       <span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'> 7</span>     <span class='nt'>&lt;/ol&gt;</span>
+<span class='lineno'> 8</span>     <span class='nt'>&lt;ol&gt;</span>
+<span class='lineno'> 9</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>2.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>Second list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'>10</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>3.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>Third list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'>11</span>     <span class='nt'>&lt;/ol&gt;</span>
+<span class='lineno'>12</span>   <span class='nt'>&lt;/div&gt;</span>
+<span class='lineno'>13</span> <span class='nt'>&lt;/body&gt;</span>
+</code></pre></div>
+<p>As a result, he can get rid of the extra non-semantic ordered lists:</p>
+<div class='highlight'><pre><code class='html'><span class='lineno'> 1</span> <span class='nt'>&lt;body</span> <span class='na'>id=</span><span class='s'>&quot;List_test&quot;</span> <span class='na'>xml:lang=</span><span class='s'>&quot;en-US&quot;</span><span class='nt'>&gt;</span>
+<span class='lineno'> 2</span>   <span class='nt'>&lt;div</span> <span class='na'>class=</span><span class='s'>&quot;Basic-Text-Frame&quot;</span><span class='nt'>&gt;</span>
+<span class='lineno'> 3</span>     <span class='nt'>&lt;ol&gt;</span>
+<span class='lineno'> 4</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>1.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>First list item
+<span class='lineno'> 5</span>         <span class='nt'>&lt;p</span> <span class='na'>class=</span><span class='s'>&quot;Num-List----&quot;</span><span class='nt'>&gt;</span>Additional paragraph to extend the content for the first list item.<span class='nt'>&lt;/p&gt;</span>
+<span class='lineno'> 6</span>       <span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'> 7</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>2.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>Second list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'> 8</span>       <span class='nt'>&lt;li</span> <span class='na'>class=</span><span class='s'>&quot;Num-List&quot;</span><span class='nt'>&gt;&lt;span</span> <span class='na'>class=</span><span class='s'>&quot;char-style-override-1&quot;</span><span class='nt'>&gt;</span>3.<span class='ni'>&amp;#9;</span><span class='nt'>&lt;/span&gt;</span>Third list item<span class='nt'>&lt;/li&gt;</span>
+<span class='lineno'> 9</span>     <span class='nt'>&lt;/ol&gt;</span>
+<span class='lineno'>10</span>   <span class='nt'>&lt;/div&gt;</span>
+<span class='lineno'>11</span> <span class='nt'>&lt;/body&gt;</span>
+</code></pre></div>
+<p>Doesn’t that look so much better? There’s still a bunch of unnecessary stuff there though.</p>
+
+<h3 id="override_the_css">Override the CSS</h3>
+
+<p>We see the double bullets because InDesign is encoding the bullets as real characters. Never mind the accessibility concerns, Adobe’s hack of a solution to the problem of custom bullet styling is extremely shortsighted: it causes the InDesign generated layout to break in many older ebook readers (and it is just plain ugly).</p>
+
+<p>Adobe tries to implement custom list styling by making lists behave like blocks and by taking away all of the default hanging indentation with the following CSS rules:</p>
+<div class='highlight'><pre><code class='css'><span class='nt'>li</span> <span class='p'>{</span> <span class='c'>/* Make a list item behave like a generic block element */</span>
+  <span class='k'>display</span><span class='o'>:</span> <span class='k'>block</span><span class='p'>;</span>
+<span class='p'>}</span>
+
+<span class='nt'>ol</span><span class='o'>,</span> <span class='nt'>ul</span><span class='o'>,</span> <span class='nt'>li</span> <span class='p'>{</span> <span class='c'>/* Strip all spacing from lists and list items */</span>
+  <span class='k'>margin</span><span class='o'>:</span> <span class='m'>0</span><span class='p'>;</span>
+  <span class='k'>padding</span><span class='o'>:</span> <span class='m'>0</span><span class='p'>;</span>
+  <span class='k'>border-width</span><span class='o'>:</span> <span class='m'>0</span><span class='p'>;</span>
+<span class='p'>}</span>
+</code></pre></div>
+<p>So, Liz Castro’s “coder” <a href="http://www.pigsgourdsandwikis.com/2012/08/numbered-lists-from-indesign-6.html" title="Numbered lists from InDesign CS 6 to EPUB and mobi">solution</a> is to just make everything <em>look</em> like it should through CSS overrides. She adds another stylesheet in the EPUB export process with the following rules:</p>
+<div class='highlight'><pre><code class='css'><span class='nt'>li</span> <span class='p'>{</span> <span class='c'>/* Make lists behave like lists */</span>
+  <span class='k'>display</span><span class='o'>:</span> <span class='k'>list-item</span><span class='p'>;</span>
+<span class='p'>}</span>
+
+<span class='nt'>ol</span><span class='o'>,</span> <span class='nt'>ul</span> <span class='p'>{</span> <span class='c'>/* Add two em measurements of negative space around each list */</span>
+  <span class='k'>margin</span><span class='o'>:</span> <span class='m'>2em</span><span class='p'>;</span>
+<span class='p'>}</span>
+</code></pre></div>
+<p>Since this stylesheet will be added after the default InDesign stylesheet, these CSS rules will override the bad InDesign CSS. Lists now behave like lists.</p>
+
+<p>We still have the problem of a bunch of number entity references in numbered lists and bullet entity references in bulleted lists. Liz uses a GREP search &amp; replace to get rid of the numbers:</p>
+<pre>&lt;span class="ordered-list.*?&lt;/span&gt;</pre>
+<p>The <code>ordered-list</code> class is the name of the paragraph style that used numbering.</p>
+
+<p>We can use a similar replacement to remove all of the bullets:</p>
+<pre>&lt;span class="unordered-list.*?&lt;/span&gt;</pre>
+<p>The result is not too shabby, but it doesn’t help us correct the markup semantically.</p>
+
+<h2 id="semantic_enforcement">Semantic Enforcement</h2>
+
+<p>Currently, the best solution is to use the above to techniques to get you a step in the right direction, and then do the real clean up by hand.</p>
+
+<p>I plan to construct some automation.</p>
+      </div>
+      <div class="span2">
+      </div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-dropdown.js"></script>
+  </body>
+</html>

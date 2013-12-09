@@ -1,7 +1,3 @@
 source:		./source
 destination: 	./export
 pygments:	true
-
-markdown: redcarpet
-redcarpet:
-  extensions: [smart]

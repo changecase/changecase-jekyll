@@ -33,6 +33,7 @@ Hacks
 Some hacks have cropped up in order to deal with this terriblly non-semantic use
 of lists.
 
+
 ### Correct the markup ###
 
 Part of the problem is that InDesign CS6 doesn't have a good way to semantically
@@ -156,6 +157,7 @@ We can use a similar replacement to remove all of the bullets:
 
 The result is not too shabby, but it doesn't help us correct the markup 
 semantically.
+
 
 Semantic Enforcement
 --------------------
