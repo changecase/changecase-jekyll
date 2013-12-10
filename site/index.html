@@ -10,4 +10,10 @@ title: changecase | Jeff Jacobson-Swartfager
       <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
+  <h1>Portfolio</h1>
+  <ul class="posts">
+    {% for work in site.portfolio %}
+      <li><span>{{ work.date | date_to_string }}</span> &raquo; <a href="{{ work.url }}">{{ work.title }}</a></li>
+    {% endfor %}
+  </ul>
 </div>
